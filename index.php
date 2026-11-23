@@ -13,7 +13,7 @@ require_once "utils/autoload.php";
     <link href="./src/output.css" rel="stylesheet">
     <title>Document</title>
 </head>
-<body>
+<body class="container mx-auto">
     
 </body>
 </html>
