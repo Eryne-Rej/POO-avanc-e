@@ -51,57 +51,36 @@
             <div class="destination-grid">
                 <?php
                 $destinations = [
-                    ["Paris — Le Fabuleux Destin d'Amélie Poulain", "225 €", "4.5", "photo-1502602898657-3e91760cbb34"],
-                    ["Mont-Saint-Michel — Les Vacances du Petit Nicolas", "225 €", "5", "photo-1519677100203-a0e668c92439"],
-                    ["Musée du Louvre — Da Vinci Code", "225 €", "4", "photo-1565099824688-e93eb20fe622"],
-                    ["Étretat — Lupin", "225 €", "4.5", "photo-1500530855697-b586d89ba3ee"],
-                    ["Dubrovnik — Game of Thrones", "225 €", "4", "local:dubrovnik.png"],
-                    ["Château d'Alnwick — Harry Potter", "225 €", "5", "local:alnwick.png"],
-                    ["Skellig Michael — Star Wars", "225 €", "4.5", "photo-1516483638261-f4dbaf036963"],
-                    ["Central Park — Maman, j'ai raté l'avion", "225 €", "4", "photo-1534430480872-3498386e7856"]
-                ];
-                foreach ($destinations as $destination):
-                    [$name, $price, $rating, $photo] = $destination;
-                ?>
-                    <article class="destination-card">
-                        <?php
-                        $imageUrl = str_starts_with($photo, "local:")
-                            ? "public/images/" . substr($photo, 6)
-                            : "https://images.unsplash.com/" . $photo . "?auto=format&fit=crop&w=400&q=80";
-                        ?>
-                        <img src="<?= htmlspecialchars($imageUrl) ?>" alt="<?= htmlspecialchars($name) ?>">
-                        <div class="destination-info">
-                            <h3><?= htmlspecialchars($name) ?></h3>
-                            <div>
-                                <span><?= htmlspecialchars($price) ?></span>
-                                <span class="stars" aria-label="Note <?= $rating ?> sur 5">★★★★☆</span>
-                            </div>
+                                ["paris", "Paris", "Emilie in Paris", "225 €", "4.5", "photo-1502602898657-3e91760cbb34"],
+                                ["mont-saint-michel", "Mont-Saint-Michel", "Merlin", "225 €", "5", "photo-1519677100203-a0e668c92439"],
+                                ["louvre", "Musée du Louvre", "Da Vinci Code", "225 €", "4", "photo-1565099824688-e93eb20fe622"],
+                                ["etretat", "Étretat", "Lupin", "225 €", "4.5", "photo-1500530855697-b586d89ba3ee"],
+                                ["dubrovnik", "Dubrovnik", "Game of Thrones", "225 €", "4", "local:dubrovnik.png"],
+                                ["alnwick", "Château d'Alnwick", "Harry Potter", "225 €", "5", "local:alnwick.png"],
+                                ["skellig-michael", "Skellig Michael", "Star Wars", "225 €", "4.5", "photo-1516483638261-f4dbaf036963"],
+                                ["central-park", "Central Park", "Maman, j'ai raté l'avion", "225 €", "4", "photo-1534430480872-3498386e7856"]
+                            ];
+                            foreach ($destinations as $destination):
+                                [$id, $name, $film, $price, $rating, $photo] = $destination;
+                            ?>
+                                <a class="destination-card" href="destination.php?<?= http_build_query(["id" => $id, "name" => $name, "film" => $film, "price" => $price, "photo" => $photo]) ?>">
+                                    <?php
+                                    $imageUrl = str_starts_with($photo, "local:")
+                                        ? "public/images/" . substr($photo, 6)
+                                        : "https://images.unsplash.com/" . $photo . "?auto=format&fit=crop&w=400&q=80";
+                                    ?>
+                                    <img src="<?= htmlspecialchars($imageUrl) ?>" alt="<?= htmlspecialchars($name) ?>">
+                                    <div class="destination-info">
+                                        <h3><?= htmlspecialchars($name) ?> — <?= htmlspecialchars($film) ?></h3>
+                                        <div>
+                                            <span><?= htmlspecialchars($price) ?></span>
+                                            <span class="stars" aria-label="Note <?= $rating ?> sur 5">★★★★☆</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
                         </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <section class="offers-panel" aria-label="Offres de voyage">
-            <h2>Matamata, Nouvelle-Zélande</h2>
-            <div class="offers-list">
-                <?php for ($i = 1; $i <= 4; $i++): ?>
-                    <article class="offer-card">
-                        <div class="offer-main">
-                            <div class="offer-name">
-                                <strong>Compagny <?= $i ?></strong>
-                                <span class="stars" aria-label="Note 4 sur 5">★★★★☆</span>
-                            </div>
-                            <p>Description de l'offre de voyage</p>
-                        </div>
-                        <div class="offer-details">
-                            <span>Prix €</span>
-                            <p>commentaires</p>
-                        </div>
-                    </article>
-                <?php endfor; ?>
-            </div>
-        </section>
+                    </section>
     </main>
     <script>
         const menuButton = document.querySelector('.menu-button');
