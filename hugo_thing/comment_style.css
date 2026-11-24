@@ -1,0 +1,55 @@
+.stars {
+    display: flex;
+    color: #f0c400;
+    font-size: 20px;
+    letter-spacing: 1px;
+    justify-content: flex-end;
+}
+
+.flex_shit{
+    display: flex;
+    justify-content: space-between;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.comment-section {
+    display: grid;
+    row-gap: 24;
+    background: #F4D5E4;
+    gap: 36px 24px; 
+    border-radius: 7px;
+    padding: 30px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.commentary {
+    background: #fff;
+    border-radius: 7px;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.pseudo-writing {
+    width: 70%;
+    border-radius: 7px;
+    border: 1px solid #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.text-field {
+    width: 100%;
+    border-radius: 7px;
+    border: 1px solid #fff;
+    height: 200px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.button-submit {
+    width: 22%;
+    border-radius: 7px;
+    background-color: #E684BE;
+    border: #E684BE;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+}
