@@ -1,8 +1,7 @@
 <?php
 
-require_once "./utils/bdd.php";
-require_once "./Entities/destinationMapper.php";
-require_once "./Entities/nav.php";
+require_once "./utils/autoload.php";
+require_once "./Mappers/destinationMapper.php";
 require_once "./Entities/hero.php";
 require_once "./Entities/destination_grid.php";
 
