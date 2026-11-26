@@ -7,31 +7,70 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$destinationCatalog = require "../Entities/destinations.php";
-$destinationsById = [];
-foreach ($destinationCatalog as $destination) {
-    $destinationsById[$destination[0]] = $destination;
+function gofilmParseOperatorIds(string $value): array
+{
+    $operatorIds = [];
+    foreach (explode(",", $value) as $valuePart) {
+        $operatorId = filter_var(trim($valuePart), FILTER_VALIDATE_INT);
+        if ($operatorId !== false && $operatorId > 0) {
+            $operatorIds[$operatorId] = $operatorId;
+        }
+    }
+
+    return array_values($operatorIds);
 }
-    
+
+function gofilmValidateDestinationIds($submittedIds, array $destinationsById): array
+{
+    if (!is_array($submittedIds)) {
+        throw new InvalidArgumentException("La sélection de destinations est invalide.");
+    }
+
+    $destinationIds = [];
+    foreach ($submittedIds as $submittedId) {
+        $destinationId = filter_var($submittedId, FILTER_VALIDATE_INT);
+        if ($destinationId === false || $destinationId === null || !isset($destinationsById[$destinationId])) {
+            throw new InvalidArgumentException("La sélection contient une destination inconnue.");
+        }
+        $destinationIds[$destinationId] = $destinationId;
+    }
+
+    return array_values($destinationIds);
+}
+
 $adminMessage = $_SESSION["admin_message"] ?? null;
 unset($_SESSION["admin_message"]);
 $adminError = null;
 $operators = [];
+$destinations = [];
+$destinationsById = [];
 $pdo = null;
+$databaseSchemaReady = false;
 
 try {
     $pdo = require __DIR__ . "/../utils/database.php";
+    $destinations = $pdo->query(
+        "SELECT id, location, price, image, note, operator FROM destination ORDER BY id"
+    )->fetchAll();
+    foreach ($destinations as $destination) {
+        $destinationsById[(int) $destination["id"]] = $destination;
+    }
+
+    $operators = $pdo->query(
+        "SELECT id, name, link, grade_count, is_premium FROM tour_operator ORDER BY name"
+    )->fetchAll();
+    $databaseSchemaReady = true;
 } catch (PDOException $exception) {
-    error_log("GoFilm admin database connection failed: " . $exception->getMessage());
-    $adminError = "Connexion à la base de données impossible. Vérifiez la configuration MySQL.";
+    error_log("GoFilm admin database loading failed: " . $exception->getMessage());
+    $adminError = "La base « gofilm » ne correspond pas au schéma du fichier SQL fourni.";
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $csrfToken = $_POST["csrf_token"] ?? "";
     if (!is_string($csrfToken) || !isset($_SESSION["admin_csrf_token"]) || !hash_equals($_SESSION["admin_csrf_token"], $csrfToken)) {
         $adminError = "La session a expiré. Rechargez la page puis réessayez.";
-    } elseif ($pdo === null) {
-        $adminError = "L'action est impossible tant que la base de données n'est pas disponible.";
+    } elseif ($pdo === null || !$databaseSchemaReady) {
+        $adminError = "L'action est impossible tant que la base gofilm n'utilise pas le schéma attendu.";
     } else {
         try {
             $action = $_POST["action"] ?? "";
@@ -52,86 +91,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     throw new InvalidArgumentException("Saisissez une adresse web valide en HTTP ou HTTPS.");
                 }
 
-                $selectedIds = $_POST["destinations"] ?? [];
-                if (!is_array($selectedIds)) {
-                    throw new InvalidArgumentException("La sélection de destinations est invalide.");
-                }
-                $selectedDestinations = [];
-                foreach ($selectedIds as $selectedId) {
-                    if (!is_string($selectedId) || !isset($destinationsById[$selectedId])) {
-                        throw new InvalidArgumentException("La sélection contient une destination inconnue.");
-                    }
-                    $selectedDestinations[$selectedId] = $destinationsById[$selectedId];
-                }
-
-                $pdo->beginTransaction();
                 $insertOperator = $pdo->prepare(
-                    "INSERT INTO tour_operator (name, link, grade_count, grade_total, is_premium) VALUES (?, ?, 0, 0, 0)"
+                    "INSERT INTO tour_operator (name, link, grade_count, is_premium) VALUES (?, ?, 0, 0)"
                 );
                 $insertOperator->execute([$name, $link]);
-                $operatorId = (int) $pdo->lastInsertId();
-
-                $insertDestination = $pdo->prepare(
-                    "INSERT INTO destination (location, price, tour_operator_id) VALUES (?, ?, ?)"
-                );
-                foreach ($selectedDestinations as $destination) {
-                    $insertDestination->execute([
-                        $destination[1],
-                        (int) preg_replace("/\D/", "", $destination[3]),
-                        $operatorId
-                    ]);
-                }
-                $pdo->commit();
-                $_SESSION["admin_message"] = "Le tour-opérateur a été ajouté.";
+                $_SESSION["admin_message"] = "Le tour-opérateur a été ajouté. Associez-lui des destinations depuis le second formulaire.";
                 header("Location: index.php");
                 exit;
             }
 
             if ($action === "assign_destinations") {
                 $operatorId = filter_var($_POST["operator_id"] ?? null, FILTER_VALIDATE_INT);
-                $selectedIds = $_POST["destinations"] ?? [];
-                if ($operatorId === false || $operatorId === null || $operatorId < 1 || !is_array($selectedIds)) {
-                    throw new InvalidArgumentException("Sélectionnez un tour-opérateur et des destinations valides.");
+                if ($operatorId === false || $operatorId === null || $operatorId < 1) {
+                    throw new InvalidArgumentException("Sélectionnez un tour-opérateur valide.");
                 }
-                if ($selectedIds === []) {
+                $destinationIds = gofilmValidateDestinationIds(
+                    $_POST["destinations"] ?? [],
+                    $destinationsById
+                );
+                if ($destinationIds === []) {
                     throw new InvalidArgumentException("Sélectionnez au moins une destination.");
                 }
 
-                $selectedDestinations = [];
-                foreach ($selectedIds as $selectedId) {
-                    if (!is_string($selectedId) || !isset($destinationsById[$selectedId])) {
-                        throw new InvalidArgumentException("La sélection contient une destination inconnue.");
-                    }
-                    $selectedDestinations[$selectedId] = $destinationsById[$selectedId];
-                }
-
-                $pdo->beginTransaction();
                 $operatorExists = $pdo->prepare("SELECT id FROM tour_operator WHERE id = ?");
                 $operatorExists->execute([$operatorId]);
                 if (!$operatorExists->fetch()) {
                     throw new InvalidArgumentException("Le tour-opérateur sélectionné n'existe pas.");
                 }
 
-                $findDestination = $pdo->prepare(
-                    "SELECT id FROM destination WHERE tour_operator_id = ? AND location = ?"
-                );
-                $insertDestination = $pdo->prepare(
-                    "INSERT INTO destination (location, price, tour_operator_id) VALUES (?, ?, ?)"
-                );
+                $updateDestination = $pdo->prepare("UPDATE destination SET operator = ? WHERE id = ?");
                 $addedCount = 0;
-                foreach ($selectedDestinations as $destination) {
-                    $findDestination->execute([$operatorId, $destination[1]]);
-                    if ($findDestination->fetch()) {
+                foreach ($destinationIds as $destinationId) {
+                    $assignedIds = gofilmParseOperatorIds($destinationsById[$destinationId]["operator"]);
+                    if (in_array($operatorId, $assignedIds, true)) {
                         continue;
                     }
-                    $insertDestination->execute([
-                        $destination[1],
-                        (int) preg_replace("/\D/", "", $destination[3]),
-                        $operatorId
-                    ]);
+                    $assignedIds[] = $operatorId;
+                    $updateDestination->execute([implode(",", $assignedIds), $destinationId]);
                     $addedCount++;
                 }
-                $pdo->commit();
+
                 $_SESSION["admin_message"] = $addedCount > 0
                     ? "{$addedCount} destination(s) ajoutée(s) au tour-opérateur."
                     : "Ces destinations sont déjà associées à ce tour-opérateur.";
@@ -160,22 +159,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     throw new InvalidArgumentException("Tour-opérateur invalide.");
                 }
 
-                $pdo->beginTransaction();
-                $findOperator = $pdo->prepare("SELECT id FROM tour_operator WHERE id = ? FOR UPDATE");
-                $findOperator->execute([$operatorId]);
-                if (!$findOperator->fetch()) {
+                $operatorExists = $pdo->prepare("SELECT id FROM tour_operator WHERE id = ?");
+                $operatorExists->execute([$operatorId]);
+                if (!$operatorExists->fetch()) {
                     throw new InvalidArgumentException("Le tour-opérateur sélectionné n'existe pas.");
                 }
 
+                $updateDestination = $pdo->prepare("UPDATE destination SET operator = ? WHERE id = ?");
+                foreach ($destinations as $destination) {
+                    $assignedIds = gofilmParseOperatorIds($destination["operator"]);
+                    $remainingIds = array_values(array_diff($assignedIds, [$operatorId]));
+                    if (count($remainingIds) !== count($assignedIds)) {
+                        $updateDestination->execute([implode(",", $remainingIds), (int) $destination["id"]]);
+                    }
+                }
+
+                $pdo->beginTransaction();
                 $deleteReviews = $pdo->prepare("DELETE FROM review WHERE tour_operator_id = ?");
                 $deleteReviews->execute([$operatorId]);
-                $deleteDestinations = $pdo->prepare("DELETE FROM destination WHERE tour_operator_id = ?");
-                $deleteDestinations->execute([$operatorId]);
                 $deleteOperator = $pdo->prepare("DELETE FROM tour_operator WHERE id = ?");
                 $deleteOperator->execute([$operatorId]);
                 $pdo->commit();
 
-                $_SESSION["admin_message"] = "Le tour-opérateur, ses destinations et ses avis ont été supprimés.";
+                $_SESSION["admin_message"] = "Le tour-opérateur a été supprimé de la base ainsi que ses avis et associations.";
                 header("Location: index.php");
                 exit;
             }
@@ -191,30 +197,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $pdo->rollBack();
             }
             error_log("GoFilm admin database action failed: " . $exception->getMessage());
-            $adminError = "L'opération a échoué. Vérifiez la base de données et réessayez.";
+            $adminError = "L'opération a échoué. Vérifiez la base gofilm et réessayez.";
         }
     }
 }
 
-if ($pdo !== null) {
+if ($pdo !== null && $databaseSchemaReady) {
     try {
-        $operators = $pdo->query(
-            "SELECT id, name, link, is_premium FROM tour_operator ORDER BY name"
-        )->fetchAll();
-        $operatorDestinations = $pdo->query(
-            "SELECT tour_operator_id, location FROM destination ORDER BY location"
-        )->fetchAll();
-        $operatorsById = [];
-        foreach ($operatorDestinations as $operatorDestination) {
-            $operatorsById[(int) $operatorDestination["tour_operator_id"]][] = $operatorDestination["location"];
+        $destinationNamesByOperator = [];
+        foreach ($destinations as $destination) {
+            foreach (gofilmParseOperatorIds($destination["operator"]) as $assignedOperatorId) {
+                $destinationNamesByOperator[$assignedOperatorId][] = $destination["location"];
+            }
         }
         foreach ($operators as &$operator) {
-            $operator["destinations"] = $operatorsById[(int) $operator["id"]] ?? [];
+            $operator["destinations"] = $destinationNamesByOperator[(int) $operator["id"]] ?? [];
         }
         unset($operator);
     } catch (PDOException $exception) {
-        error_log("GoFilm admin data loading failed: " . $exception->getMessage());
-        $adminError = "Impossible de charger les tour-opérateurs. Vérifiez la structure de la base de données.";
+        error_log("GoFilm admin association loading failed: " . $exception->getMessage());
+        $adminError = "Impossible de charger les associations des tour-opérateurs.";
     }
 }
 
