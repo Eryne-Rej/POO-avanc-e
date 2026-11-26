@@ -14,4 +14,11 @@ class destinationMapper{
         return $destinations;
     }
 
+    public function getInfosFromId(int $id){
+        $requestInfos = $this->pdo->query("SELECT * FROM destination WHERE id = $id");
+        $infos = $requestInfos->fetch();
+
+        return $infos;
+    }
+
 }
