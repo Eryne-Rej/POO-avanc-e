@@ -2,7 +2,7 @@
 <div class="comment-section">
     <div class="commentary">
         <div class="flex_shit">
-            <input type="text" id="fname" name="fname" class="pseudo-writing">
+            <input type="text" id="fname" name="fname" class="pseudo-writing" placeholder="Votre nom ici ...">
             </input>
             <button class="button-submit">
                 submit
@@ -12,8 +12,7 @@
             </span>
             <br>
         </div>
-        <input type="text" id="text" name="text" class="text-field">
-        </input>
+        <textarea type="text" class="text-field" placeholder="Votre commentaire ici ..."></textarea>
     </div>
     <div class="commentary">
         <div class="flex_shit">

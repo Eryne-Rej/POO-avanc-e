@@ -8,6 +8,7 @@ $appBase = defined("GOFILM_ADMIN_VIEW") ? "../" : "";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="stylesheet" href="<?= $appBase ?>src/output.css">
     <link rel="stylesheet" href="<?= $appBase ?>public/style/style.css">
     <title>GoFilm</title>
 </head>

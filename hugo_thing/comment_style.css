@@ -31,6 +31,7 @@
 }
 
 .pseudo-writing {
+    font-size: 20px;
     width: 70%;
     border-radius: 7px;
     border: 1px solid #000;
@@ -38,6 +39,7 @@
 }
 
 .text-field {
+    font-size: 20px;
     width: 100%;
     border-radius: 7px;
     border: 1px solid #fff;
@@ -46,6 +48,7 @@
 }
 
 .button-submit {
+    font-size: 20px;
     width: 22%;
     border-radius: 7px;
     background-color: #E684BE;
