@@ -1,4 +1,3 @@
 <?php
 
-require_once "./Entities/nav.php";
-require_once "./Entities/hero.php";
+require_once __DIR__ . "/../Entities/destinationMapper.php";
