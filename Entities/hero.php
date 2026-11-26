@@ -1,16 +1,16 @@
 <section class="w-full flex justify-center my-25">
 
-    <div class="absolute top-1/4 text-white text-center">
-        <h3 class=" text-4xl">Le Seigneur des anneaux</h3>
-        <h1 class="text-5xl font-bold">Matamata, Nouvelle-Zélande</h1>
+    <div class="absolute top-45 sm:top-60 text-white text-center">
+        <h3 class=" text-lg md:text-xl lg:text-4xl">Le Seigneur des anneaux</h3>
+        <h1 class="text-xl md:text-2xl lg:text-5xl font-bold">Matamata, Nouvelle-Zélande</h1>
 
-        <form action="" class="flex flex-row text-black bg-[#D9D9D9]/50 rounded-l-[40px] font-bold rounded-r-[50px] pl-4  text-white gap-5 relative top-30">
-            <select name="depart" id="depart" >
+        <form action="" class="hidden sm:flex flex-row text-black bg-[#D9D9D9]/50 rounded-l-[40px] font-bold rounded-r-[50px] md:pl-4  text-white gap-5 relative my-10">
+            <select name="depart" id="depart"  class="hidden lg:block">
                 <option value="lyon">Lyon</option>
                 <option value="paris">Paris</option>
             </select>
             <hr>
-            <select name="arrivee" id="arrivee">
+            <select name="arrivee" id="arrivee" class="hidden lg:block">
                 <option value="nouvelle-zelande">Nouvelle-Zélande</option>
             </select>
             <input type="date" name="departDate" id="departDate">

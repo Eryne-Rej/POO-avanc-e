@@ -7,12 +7,12 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$destinationCatalog = require __DIR__ . "/../Entities/destinations.php";
+$destinationCatalog = require "../Entities/destinations.php";
 $destinationsById = [];
 foreach ($destinationCatalog as $destination) {
     $destinationsById[$destination[0]] = $destination;
 }
-
+    
 $adminMessage = $_SESSION["admin_message"] ?? null;
 unset($_SESSION["admin_message"]);
 $adminError = null;
