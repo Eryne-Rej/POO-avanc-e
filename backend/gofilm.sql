@@ -77,7 +77,8 @@ INSERT INTO `tour_operator` (`id`, `name`, `link`, `grade_count`, `grade_total`,
 -- Indexes for table `destination`
 --
 ALTER TABLE `destination`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `destination_operator_location` (`tour_operator_id`,`location`);
 
 --
 -- Indexes for table `review`
@@ -121,13 +122,13 @@ ALTER TABLE `tour_operator`
 -- Constraints for table `destination`
 --
 ALTER TABLE `destination`
-  ADD CONSTRAINT `destination_ibfk_1` FOREIGN KEY (`id`) REFERENCES `tour_operator` (`id`);
+  ADD CONSTRAINT `destination_ibfk_1` FOREIGN KEY (`tour_operator_id`) REFERENCES `tour_operator` (`id`);
 
 --
 -- Constraints for table `review`
 --
 ALTER TABLE `review`
-  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`id`) REFERENCES `tour_operator` (`id`);
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`tour_operator_id`) REFERENCES `tour_operator` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
