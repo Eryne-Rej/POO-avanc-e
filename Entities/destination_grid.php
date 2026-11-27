@@ -13,7 +13,7 @@
                         <a href="../destination.php?id=<?= $index + 1 ?>">
                             <div class="flex flex-col cursor-pointer">
                                 <div class="bg-black rounded-[20px] overflow-hidden">
-                                    <img src="../public/img/<?= $destination['image'] ?>" alt="image">
+                                    <img src="./public/img/<?= $destination['image'] ?>" alt="image">
                                 </div>
 
                                 <div class="">
