@@ -4,17 +4,19 @@ require_once("../utils/bdd.php");
 
 try {
     $query = $pdo->prepare(
-        "SELECT author, messages, star_review, tour_operator_id	
+        "SELECT author, message, star_review, tour_operator_id	
          FROM review
+         WHERE tour_operator_id = :tour_operator_id
          ORDER BY id DESC"
     );
 
-    $commentaires = $query->fetchAll(PDO::FETCH_ASSOC);
+    $tourOperatorId = filter_input(INPUT_POST, "tour_operator_id", FILTER_VALIDATE_INT);
 
-    echo json_encode(
-        $commentaires,
-        JSON_UNESCAPED_UNICODE
-    );
+    $query->execute([
+        "tour_operator_id" => $tourOperatorId
+    ]);
+
+    $reviews = $query->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
     error_log("Erreur lors du chargement des commentaires : " . $e->getMessage());
