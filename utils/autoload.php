@@ -1,3 +1,3 @@
 <?php
 
-require_once __DIR__ . "/../Entities/destinationMapper.php";
+require_once __DIR__ . "/bdd.php";
