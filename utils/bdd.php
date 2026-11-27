@@ -1,10 +1,12 @@
 <?php
 
-if (!isset($pdo) || !($pdo instanceof PDO)) {
-    try {
-        $pdo = require __DIR__ . "/database.php";
-    } catch (PDOException $exception) {
-        error_log("GoFilm database connection failed: " . $exception->getMessage());
-        $pdo = null;
-    }
+$db = 'mysql:host=localhost;dbname=gofilm;charset=utf8mb4';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO($db, $username, $password);
+} catch (PDOException $e) {
+    error_log('Erreur de connexion PDO : ' . $e->getMessage());
+    $pdo = null;
 }

@@ -4,14 +4,17 @@
         <h3 class=" text-lg md:text-xl lg:text-4xl">Le Seigneur des anneaux</h3>
         <h1 class="text-xl md:text-2xl lg:text-5xl font-bold">Matamata, Nouvelle-Zélande</h1>
 
-        <form action="" class="hidden sm:flex flex-row text-black bg-[#D9D9D9]/50 rounded-l-[40px] font-bold rounded-r-[50px] md:pl-4  text-white gap-5 relative my-10">
+        <form action="index.php" method="get" class="hidden sm:flex flex-row text-black bg-[#D9D9D9]/50 rounded-l-[40px] font-bold rounded-r-[50px] md:pl-4  text-white gap-5 relative my-10">
             <select name="depart" id="depart"  class="hidden lg:block">
                 <option value="lyon">Lyon</option>
                 <option value="paris">Paris</option>
             </select>
             <hr>
             <select name="arrivee" id="arrivee" class="hidden lg:block">
-                <option value="nouvelle-zelande">Nouvelle-Zélande</option>
+                <option value="">Toutes les destinations</option>
+                <?php foreach ($searchLocations as $location): ?>
+                    <option value="<?= htmlspecialchars($location) ?>"><?= htmlspecialchars($location) ?></option>
+                <?php endforeach; ?>
             </select>
             <input type="date" name="departDate" id="departDate">
             <input type="date" name="arriveeDate" id="arriveeDate">
@@ -22,6 +25,13 @@
     </div>
 
         <div class="bg-black rounded-[20px] overflow-hidden">
-            <img src="<?= $appBase ?>public/img/hero_anneaux.png" alt="Destination de tournage du Seigneur des anneaux" class="w-full h-auto">
+            <img src="public/img/hero_anneaux.png" alt="hero" class="w-full h-auto">
         </div>
 </section>
+
+
+
+
+
+
+<div class="maDiv"></div>
