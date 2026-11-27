@@ -7,20 +7,18 @@ class destinationMapper{
         $this->pdo = $pdo;
     }
 
-    public function getAllDestinations(): array
-    {
-        return $this->pdo
-            ->query("SELECT * FROM destination ORDER BY id")
-            ->fetchAll();
+    public function getAllDestinations(){
+        $requestDestination = $this->pdo->query('SELECT * FROM destination');
+        $destinations = $requestDestination->fetchAll();
+
+        return $destinations;
     }
 
-    public function getInfosFromId(int $id): ?array
-    {
-        $statement = $this->pdo->prepare("SELECT * FROM destination WHERE id = ?");
-        $statement->execute([$id]);
-        $destination = $statement->fetch();
+    public function getInfosFromId(int $id){
+        $requestInfos = $this->pdo->query("SELECT * FROM destination WHERE id = $id");
+        $infos = $requestInfos->fetch();
 
-        return $destination === false ? null : $destination;
+        return $infos;
     }
 
 }

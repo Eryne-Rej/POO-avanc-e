@@ -1,3 +1,4 @@
 <?php
 
-require_once __DIR__ . "/bdd.php";
+require_once "./Entities/nav.php";
+require_once "./utils/bdd.php";

@@ -26,6 +26,15 @@
                 Site web
                 <input type="url" name="link" maxlength="300" placeholder="https://exemple.fr" required>
             </label>
+            <fieldset class="admin-destination-options">
+                <legend>Destinations à associer (facultatif)</legend>
+                <?php foreach ($destinationCatalog as $destination): ?>
+                    <label>
+                        <input type="checkbox" name="destinations[]" value="<?= htmlspecialchars($destination[0]) ?>">
+                        <?= htmlspecialchars($destination[1]) ?> — <?= htmlspecialchars($destination[2]) ?>
+                    </label>
+                <?php endforeach; ?>
+            </fieldset>
             <button type="submit">Ajouter le tour-opérateur</button>
         </form>
 
@@ -44,10 +53,10 @@
             </label>
             <fieldset class="admin-destination-options">
                 <legend>Destinations disponibles</legend>
-                <?php foreach ($destinations as $destination): ?>
+                <?php foreach ($destinationCatalog as $destination): ?>
                     <label>
-                        <input type="checkbox" name="destinations[]" value="<?= (int) $destination["id"] ?>">
-                        <?= htmlspecialchars($destination["location"]) ?> — <?= (int) $destination["price"] ?> €
+                        <input type="checkbox" name="destinations[]" value="<?= htmlspecialchars($destination[0]) ?>">
+                        <?= htmlspecialchars($destination[1]) ?> — <?= htmlspecialchars($destination[2]) ?>
                     </label>
                 <?php endforeach; ?>
             </fieldset>
@@ -74,17 +83,9 @@
                         <?php foreach ($operators as $operator): ?>
                             <tr>
                                 <td>
-                                    <?php
-                                    $operatorUrl = filter_var($operator["link"], FILTER_VALIDATE_URL);
-                                    $operatorScheme = is_string($operatorUrl) ? parse_url($operatorUrl, PHP_URL_SCHEME) : null;
-                                    ?>
-                                    <?php if (in_array($operatorScheme, ["http", "https"], true)): ?>
-                                        <a href="<?= htmlspecialchars($operatorUrl) ?>" target="_blank" rel="noopener noreferrer">
-                                            <?= htmlspecialchars($operator["name"]) ?>
-                                        </a>
-                                    <?php else: ?>
+                                    <a href="<?= htmlspecialchars($operator["link"]) ?>" target="_blank" rel="noopener noreferrer">
                                         <?= htmlspecialchars($operator["name"]) ?>
-                                    <?php endif; ?>
+                                    </a>
                                 </td>
                                 <td><?= htmlspecialchars($operator["destinations"] === [] ? "Aucune" : implode(", ", $operator["destinations"])) ?></td>
                                 <td><?= (int) $operator["is_premium"] === 1 ? "Premium" : "Standard" ?></td>
@@ -97,7 +98,7 @@
                                             <?= (int) $operator["is_premium"] === 1 ? "Retirer premium" : "Passer premium" ?>
                                         </button>
                                     </form>
-                                    <form method="post" onsubmit="return confirm('Retirer ce tour-opérateur ? Ses avis et associations aux destinations seront également supprimés.');">
+                                    <form method="post" onsubmit="return confirm('Retirer ce tour-opérateur ? Ses destinations et ses avis seront également supprimés.');">
                                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION["admin_csrf_token"]) ?>">
                                         <input type="hidden" name="action" value="delete_operator">
                                         <input type="hidden" name="operator_id" value="<?= (int) $operator["id"] ?>">

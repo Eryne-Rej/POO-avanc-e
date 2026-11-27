@@ -7,16 +7,14 @@ class operatorMapper{
         $this->pdo = $pdo;
     }
 
-    public function getOperatorFromId(int $id): array
-    {
-        $statement = $this->pdo->prepare(
-            "SELECT tour_operator.*
-            FROM tour_operator
-            INNER JOIN destination ON FIND_IN_SET(tour_operator.id, destination.operator)
-            WHERE destination.id = ?"
-        );
-        $statement->execute([$id]);
+    public function getOperatorFromId(int $id){
 
-        return $statement->fetchAll();
+        $requestTO = $this->pdo->prepare("SELECT tour_operator.* FROM tour_operator JOIN destination ON FIND_IN_SET(tour_operator.id, destination.operator) WHERE destination.id = :id;");
+        $requestTO->execute([
+            "id" => $id
+        ]);
+        
+        $TO = $requestTO->fetchAll();
+        return $TO;    
     }
 }

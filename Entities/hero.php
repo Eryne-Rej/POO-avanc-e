@@ -22,6 +22,13 @@
     </div>
 
         <div class="bg-black rounded-[20px] overflow-hidden">
-            <img src="<?= $appBase ?>public/img/hero_anneaux.png" alt="Destination de tournage du Seigneur des anneaux" class="w-full h-auto">
+            <img src="public/img/hero_anneaux.png" alt="hero" class="w-full h-auto">
         </div>
 </section>
+
+
+
+
+
+
+<div class="maDiv"></div>
