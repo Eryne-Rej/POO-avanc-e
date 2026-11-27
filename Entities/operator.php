@@ -16,7 +16,7 @@
             foreach ($TO as $index => $operator) {
                 ?>
                 <div class="flex w-full items-center justify-center">
-                    <div class="w-1/2 h-40 flex bg-[#F4D5E4] items-start gap-2 py-2 px-4 rounded-lg">
+                    <div class="w-1/2 h-40 flex bg-[#F4D5E4] items-start gap-2 py-2 px-4 rounded-xl">
                         <h1><?= $operator['name'] ?></h1>
                         <div class="flex relative top-0.5">
                             <?php
@@ -30,7 +30,7 @@
                             ?>
                         </div>
                     </div>
-                    <div class="bg-[#EFEFEF] h-40 w-1/8 rounded-lg py-2 px-4 ">
+                    <div class="bg-[#EFEFEF] h-40 w-1/8 rounded-xl py-2 px-4 ">
                         <h1><?= $destinationInfos['price'] ?>€</h1>
                     </div>
                 </div>
