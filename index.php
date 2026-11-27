@@ -1,9 +1,9 @@
 <?php
 
-require_once "./utils/autoload.php";
-require_once "./Mappers/destinationMapper.php";
-require_once "./Entities/hero.php";
-require_once "./Entities/destination_grid.php";
+require_once __DIR__ . "/utils/autoload.php";
+require_once __DIR__ . "/Mappers/destinationMapper.php";
+require_once __DIR__ . "/Entities/hero.php";
+require_once __DIR__ . "/Entities/destination_grid.php";
 
 ?>
 

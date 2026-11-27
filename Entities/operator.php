@@ -1,6 +1,6 @@
 <?php
-    require_once "./Mappers/operatorMapper.php";
-    require_once "./Mappers/destinationMapper.php";
+    require_once __DIR__ . "/../Mappers/operatorMapper.php";
+    require_once __DIR__ . "/../Mappers/destinationMapper.php";
 
     $mapper = new operatorMapper($pdo);
     $TO = $mapper->getOperatorFromId($_GET['id']);

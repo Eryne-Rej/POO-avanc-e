@@ -7,7 +7,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$destinationCatalog = require "../Entities/destinations.php";
+$destinationCatalog = require __DIR__ . "/../Entities/destinations.php";
 $destinationsById = [];
 foreach ($destinationCatalog as $destination) {
     $destinationsById[$destination[0]] = $destination;
