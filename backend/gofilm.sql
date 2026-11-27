@@ -27,6 +27,16 @@ SET time_zone = "+00:00";
 -- Table structure for table `destination`
 --
 
+
+CREATE TABLE ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    rating INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 CREATE TABLE `destination` (
   `id` int NOT NULL,
   `location` varchar(250) NOT NULL,
